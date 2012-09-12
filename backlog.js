@@ -201,7 +201,7 @@ function Backlog (aconf) {
           typeof(localStorage.setItem) === "function") {
         var brevs = ""
 
-        for (var i in revs)
+        for (var i = 0; i < revs.length; i++)
           if (revs[i].time > conf.cache) {
             if (i) {
               brevs = revs.slice(i)
