@@ -122,7 +122,7 @@ function Backlog (aconf) {
 
   function init () {
     conf.key = aconf.key || false // localStorage key or false to disable saving
-    conf.cache = aconf.cache || (Date.now() - 7 * 7 * 24 * 60 * 60 * 1000) / 1000 // epoch (s!) date to cache items up to or 0 to cache all
+    conf.cache = aconf.cache || (Date.now() - 7 * 7 * 24 * 60 * 60 * 1000) / 1000 // epoch (s!) date to cache items up to or 1 to cache all
     conf.once = aconf.once || 6 * 7 * 24 * 60 * 60 * 1000 // get entries time range in ms
     conf.reps = aconf.reps                         // array of repository objects
     conf.rbug = aconf.rbug || /(\d{3,6})/g         // bug regexp to filter on
@@ -201,13 +201,14 @@ function Backlog (aconf) {
           typeof(localStorage.setItem) === "function") {
         var brevs = JSON.parse(JSON.stringify(revs)) // make copy of backlog, cut it if needed and save to cache
 
-        if (conf.cache)
-          for (var i in brevs)
-            if (brevs[i].time > conf.cache) {
+        for (var i in brevs)
+          if (brevs[i].time > conf.cache) {
+            if (i) { // if i = 0 then brevs = brevs.slice(i) and there is potential for saving more revs
               brevs = brevs.slice(i);
               sliced = true
-              break
             }
+            break
+          }
 
         localStorage.setItem(conf.key, JSON.stringify(brevs))
       }
