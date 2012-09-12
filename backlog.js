@@ -199,18 +199,22 @@ function Backlog (aconf) {
           conf.key &&
           typeof(localStorage) === "object" && // != undefined?
           typeof(localStorage.setItem) === "function") {
-        var brevs = JSON.parse(JSON.stringify(revs)) // make copy of backlog, cut it if needed and save to cache
+        var brevs = ""
 
-        for (var i in brevs)
-          if (brevs[i].time > conf.cache) {
-            if (i) { // if i = 0 then brevs = brevs.slice(i) and there is potential for saving more revs
-              brevs = brevs.slice(i);
+        for (var i in revs)
+          if (revs[i].time > conf.cache) {
+            if (i) {
+              brevs = revs.slice(i)
               sliced = true
+            } else {
+              // if i = 0 then there is potential for saving more revs and we don't slice
+              brevs = revs
             }
             break
           }
 
-        localStorage.setItem(conf.key, JSON.stringify(brevs))
+        if (brevs.length)
+          localStorage.setItem(conf.key, JSON.stringify(brevs))
       }
     }
   }
