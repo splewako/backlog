@@ -18,7 +18,7 @@ function Backlog (aconf) {
         regex, rev
 
     if (val.length) {
-      regex = new RegExp(val.split(" ").join("|"), "i")
+      regex = new RegExp(val.trim().split(/\s+/).join("|"), "i")
       brevs.forEach(searchRevs, regex)
     }
 
