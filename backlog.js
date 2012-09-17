@@ -1,6 +1,9 @@
 function Backlog (aconf) {
   var acount = 0,    // async counter
       conf = new Object,
+      elmGetOlder = document.getElementById("getOlder"),
+      elmInput = document.getElementsByTagName("input")[0],
+      elmTable = document.getElementsByTagName("table")[0],
       oldest,        // oldest, epoch ms
       revs,          // backlog, oRevs objects array
       sliced = false // revs sliced before saving
@@ -13,7 +16,7 @@ function Backlog (aconf) {
 
 
   function flush (val) {
-    var brevs = revs.slice(0), // search deletes items
+    var brevs = revs.slice(), // search deletes items
         cont = "<strong>nothing to show this time…</strong>",
         regex, rev
 
@@ -48,15 +51,15 @@ function Backlog (aconf) {
       }
     }
 
-    document.getElementsByTagName("table")[0].innerHTML = cont
+    elmTable.innerHTML = cont
 
-    if (document.getElementById("getOlder").hidden) {
-      document.getElementById("getOlder").hidden = false
+    if (elmGetOlder.hidden) {
+      elmGetOlder.hidden = false
       document.getElementsByTagName("form")[0].hidden = false
       document.getElementById("status").hidden = true
     }
 
-    document.getElementById("getOlder").textContent = "get older"
+    elmGetOlder.textContent = "get older"
   }
 
   function get (repo) {
@@ -84,7 +87,7 @@ function Backlog (aconf) {
           mes = "<span style=\"color: #bd0202; font-weight: bold\">" +
                 "There was an error while trying to load resources. Try reloading the page.</span>"
           getnew ? document.getElementById("status").innerHTML = mes :
-                   document.getElementById("getOlder").innerHTML = mes
+                   elmGetOlder.innerHTML = mes
         }
       }
     }
@@ -106,16 +109,14 @@ function Backlog (aconf) {
   }
 
   function getOlder (evt) {
-    var elm = document.getElementById("getOlder")
-
     if (window.pageYOffset < (document.body.scrollHeight - 4 * window.innerHeight))
       return
 
     if (evt.type == "click")
       evt.preventDefault() // get older is a link…
 
-    if (!elm.firstElementChild) {
-      elm.innerHTML = "<progress title=\"loading more data\">loading more data…</progress>"
+    if (!elmGetOlder.firstElementChild) {
+      elmGetOlder.innerHTML = "<progress title=\"loading more data\">loading more data…</progress>"
       conf.reps.forEach(get, { n: false })
     }
   }
@@ -191,7 +192,7 @@ function Backlog (aconf) {
               break
             }
 
-      flush(document.getElementsByTagName("input")[0].value)
+      flush(elmInput.value)
 
       if (!getnew) oldest -= conf.once
 
@@ -201,13 +202,13 @@ function Backlog (aconf) {
           typeof(localStorage.setItem) === "function") {
         var brevs = ""
 
-        for (var i = 0; i < revs.length; i++)
-          if (revs[i].time > conf.cache) {
-            if (i) {
-              brevs = revs.slice(i)
+        for (var j = 0; j < revs.length; j++)
+          if (revs[j].time > conf.cache) {
+            if (j) {
+              brevs = revs.slice(j)
               sliced = true
             } else {
-              // if i = 0 then there is potential for saving more revs and we don't slice
+              // if j = 0 then there is potential for saving more revs and we don't slice
               brevs = revs
             }
             break
@@ -243,7 +244,7 @@ function Backlog (aconf) {
   }
 
   function search (evt) {
-    flush(document.getElementsByTagName("input")[0].value)
+    flush(elmInput.value)
     evt.preventDefault() // for submit event
   }
 
